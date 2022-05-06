@@ -1,5 +1,9 @@
 #pragma once
 #include <vector>
+#include <map>
+#include <set>
+#include <tuple>
+#include <string>
 
 class GameBoard
 {
