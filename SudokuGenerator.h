@@ -24,4 +24,4 @@ void deselect(std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<s
 std::vector<std::tuple<int, int, int>>
 alghorithmX(std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<std::tuple<int, int, int>>>& X_mod,
 	std::map<std::tuple<int, int, int>, std::vector<std::tuple<std::string, std::tuple<int, int>>>>& Y_set,
-	std::vector<std::tuple<int, int, int>> solution);
+	std::vector<std::tuple<int, int, int>> cover);

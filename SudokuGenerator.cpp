@@ -187,7 +187,7 @@ alghorithmX(std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<std
 		return cover;
 	else
 	{
-		int min = -1;
+		int min = 10;
 		std::tuple<std::string, std::tuple<int, int>> minKey;
 		for (std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<std::tuple<int, int, int>>>::iterator itX = X_mod.begin();
 			itX != X_mod.end(); itX++)
@@ -198,14 +198,17 @@ alghorithmX(std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<std
 				minKey = itX->first;
 			}
 		}
-		for (std::set<std::tuple<int, int, int>>::iterator subset = X_mod[minKey].begin();
-			subset != X_mod[minKey].end(); subset++)
+		for (int i = 0; i < min; i++)
 		{
+			std::set<std::tuple<int, int, int>>::iterator subset = X_mod[minKey].begin();
+			std::advance(subset, i);
 			cover.push_back(*subset);
-			std::vector<std::set<std::tuple<int, int, int>>> temp = select(X_mod, Y_set, *subset);
+			std::vector<std::set<std::tuple<int, int, int>>> temp = select(X_mod, Y_set, cover.back());
 			std::vector<std::tuple<int, int, int>> solution = alghorithmX(X_mod, Y_set, cover);
 			if (!solution.empty())
 				return solution;
+			deselect(X_mod, Y_set, cover.back(), temp);
+			cover.pop_back();
 		}
 		return std::vector<std::tuple<int, int, int>>();
 	}
