@@ -24,12 +24,18 @@
     <ClCompile Include="SudokuGenerator.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="SudokuSolver.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameBoard.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="SudokuGenerator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SudokuSolver.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

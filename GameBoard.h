@@ -1,17 +1,15 @@
 #pragma once
 #include <vector>
-#include <map>
-#include <set>
-#include <tuple>
-#include <string>
 
 class GameBoard
 {
-public:
+private:
+	int boxSize;
+	int gridSize;
 	std::vector<std::vector<int>> readyCells;
 	std::vector<std::vector<int>> userCells;
 public:
-	GameBoard();
+	GameBoard(int boxSize);
 	void CreateBasicBoard();
 	void MixRows();
 	void MixColumns();
@@ -19,5 +17,6 @@ public:
 	void MixDistrictsHorizontally();
 	void TransposingBoard();
 	void CreateDecision();
+	int GetBoxSize();
 };
 
