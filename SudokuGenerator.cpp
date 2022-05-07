@@ -8,18 +8,34 @@ std::vector<std::vector<int>> solveSudoku(std::vector<std::vector<int>> grid, in
 	fillXset(X_set, gridSize);
 	fillYset(Y_set, rowSize, columnSize, gridSize);
 	std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<std::tuple<int, int, int>>> X_mod = findExactCover(X_set, Y_set);
+	std::vector<std::tuple<int, int, int>> solution;
 	for (int i = 0; i < gridSize; i++)
 	{
 		for (int j = 0; j < gridSize; j++)
 		{
 			if (grid[i][j])
 			{
+				solution.push_back(std::tuple<int, int, int>(i, j, grid[i][j]));
 				select(X_mod, Y_set, std::tuple<int, int, int>(i, j, grid[i][j]));
 			}
 		}
 	}
-	std::vector<std::vector<int>> grid2;
-	return grid2;
+	solution = alghorithmX(X_mod, Y_set, solution);
+	if (solution.empty())
+	{
+		return grid;
+	}
+	else
+	{
+		for (int i = 0; i < size(solution); i++)
+		{
+			int row = std::get<0>(solution[i]);
+			int column = std::get<1>(solution[i]);
+			int number = std::get<2>(solution[i]);
+			grid[row][column] = number;
+		}
+	}
+	return grid;
 }
 
 void fillXset(std::vector<std::tuple<std::string, std::tuple<int, int>>>& X_set, int gridSize)
@@ -159,5 +175,38 @@ void deselect(std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<s
 				}
 			}
 		}
+	}
+}
+
+std::vector<std::tuple<int, int, int>>
+alghorithmX(std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<std::tuple<int, int, int>>>& X_mod,
+	        std::map<std::tuple<int, int, int>, std::vector<std::tuple<std::string, std::tuple<int, int>>>>& Y_set,
+	        std::vector<std::tuple<int, int, int>> cover = std::vector<std::tuple<int, int, int>>())
+{
+	if (X_mod.empty())
+		return cover;
+	else
+	{
+		int min = -1;
+		std::tuple<std::string, std::tuple<int, int>> minKey;
+		for (std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<std::tuple<int, int, int>>>::iterator itX = X_mod.begin();
+			itX != X_mod.end(); itX++)
+		{
+			if (std::size(itX->second) < min)
+			{
+				min = std::size(itX->second);
+				minKey = itX->first;
+			}
+		}
+		for (std::set<std::tuple<int, int, int>>::iterator subset = X_mod[minKey].begin();
+			subset != X_mod[minKey].end(); subset++)
+		{
+			cover.push_back(*subset);
+			std::vector<std::set<std::tuple<int, int, int>>> temp = select(X_mod, Y_set, *subset);
+			std::vector<std::tuple<int, int, int>> solution = alghorithmX(X_mod, Y_set, cover);
+			if (!solution.empty())
+				return solution;
+		}
+		return std::vector<std::tuple<int, int, int>>();
 	}
 }
