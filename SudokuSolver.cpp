@@ -6,9 +6,13 @@ SudokuSolver::SudokuSolver(int boxSize)
 	this->gridSize = boxSize * boxSize;
 }
 
-std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<int>> grid)
+std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<int>> &grid, std::tuple<int,int,int> limitation)
 {
 	fillRows();
+	if (limitation != std::tuple<int, int, int>())
+	{
+		tableRows.erase(limitation);
+	}
 	fillColumns();
 	std::vector<std::tuple<int, int, int>> solution;
 	for (int i = 0; i < gridSize; i++)
@@ -17,7 +21,7 @@ std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<
 		{
 			if (grid[i][j])
 			{
-				solution.push_back(std::tuple<int, int, int>(i, j, grid[i][j]));
+				//solution.push_back(std::tuple<int, int, int>(i, j, grid[i][j]));
 				select(std::tuple<int, int, int>(i, j, grid[i][j]));
 			}
 		}
@@ -25,7 +29,7 @@ std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<
 	solution = alghorithmX(solution);
 	if (solution.empty())
 	{
-		return grid;
+		return std::vector<std::vector<int>>(gridSize, std::vector<int>(gridSize, 0));
 	}
 	else
 	{
@@ -171,7 +175,7 @@ void SudokuSolver::deselect(std::tuple<int, int, int> row, std::vector<std::set<
 }
 
 std::vector<std::tuple<int, int, int>>
-SudokuSolver::alghorithmX(std::vector<std::tuple<int, int, int>> cover = std::vector<std::tuple<int, int, int>>())
+SudokuSolver::alghorithmX(std::vector<std::tuple<int, int, int>> cover)
 {
 	if (tableColumns.empty())
 		return cover;

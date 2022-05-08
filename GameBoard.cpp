@@ -110,6 +110,8 @@ void GameBoard::CreateDecision()
 			case(4):
 				this->MixDistrictsVertically();
 				break;
+			case(5):
+				this->TransposingBoard();
 		}		
 	}
 }
@@ -117,5 +119,56 @@ void GameBoard::CreateDecision()
 int GameBoard::GetBoxSize()
 {
 	return boxSize;
+}
+
+std::vector<std::vector<int>>& GameBoard::GetUserCells()
+{
+	return userCells;
+}
+
+void GameBoard::CreateTask(int difficulty)
+{
+	int closed;
+	SudokuSolver solver(boxSize);
+	switch (difficulty)
+	{
+	case 1:
+		closed = 35;
+		break;
+	case 2:
+		closed = 45;
+		break;
+	case 3:
+		closed = 55;
+		break;
+	default:
+		closed = 35;
+		break;
+	}
+	int amountCells = gridSize * gridSize;
+	int chosen;
+	userCells = readyCells;
+	std::vector<std::vector<int>> looked(gridSize, std::vector<int>(gridSize, 0));
+	int tempCell;
+	std::vector<std::vector<int>> tempCells;
+	for (int i = 0; (i < amountCells) && (closed > 0); i++)
+	{
+		do chosen = rand() % 81;
+		while (looked[chosen / gridSize][chosen % gridSize] == 1);
+		looked[chosen / gridSize][chosen % gridSize] = 1;
+		tempCell = userCells[chosen / gridSize][chosen % gridSize];
+		std::tuple<int, int, int> limitation(chosen / gridSize, chosen % gridSize, tempCell);
+		tempCells = userCells;
+		tempCells[chosen / gridSize][chosen % gridSize] = 0;
+		if (solver.solveSudoku(tempCells, limitation) == std::vector<std::vector<int>>(gridSize, std::vector<int>(gridSize, 0)))
+		{
+			userCells = tempCells;
+			closed--;
+		}
+	}
+	if (closed != 0)
+	{
+		CreateTask(difficulty);
+	}
 }
 

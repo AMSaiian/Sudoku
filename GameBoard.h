@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "SudokuSolver.h"
 
 class GameBoard
 {
@@ -8,8 +9,6 @@ private:
 	int gridSize;
 	std::vector<std::vector<int>> readyCells;
 	std::vector<std::vector<int>> userCells;
-public:
-	GameBoard(int boxSize);
 	void CreateBasicBoard();
 	void MixRows();
 	void MixColumns();
@@ -17,6 +16,10 @@ public:
 	void MixDistrictsHorizontally();
 	void TransposingBoard();
 	void CreateDecision();
+public:
+	GameBoard(int boxSize);
+	void CreateTask(int difficulty);
+	std::vector<std::vector<int>>& GetUserCells();
 	int GetBoxSize();
 };
 

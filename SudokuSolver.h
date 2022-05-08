@@ -17,8 +17,8 @@ private:
 	std::vector<std::set<std::tuple<int, int, int>>> select(std::tuple<int, int, int> row);
 	void deselect(std::tuple<int, int, int> row, std::vector<std::set<std::tuple<int, int, int>>> columns);
 	std::vector<std::tuple<int, int, int>>
-		alghorithmX(std::vector<std::tuple<int, int, int>> cover);
+		alghorithmX(std::vector<std::tuple<int, int, int>> cover = std::vector<std::tuple<int, int, int>>());
 public:
 	SudokuSolver(int boxSize);
-	std::vector<std::vector<int>> solveSudoku(std::vector<std::vector<int>> grid);
+	std::vector<std::vector<int>> solveSudoku(std::vector<std::vector<int>>& grid, std::tuple<int, int, int> limitation = std::tuple<int, int, int>());
 };
