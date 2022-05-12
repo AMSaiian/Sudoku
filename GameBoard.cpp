@@ -6,6 +6,10 @@ GameBoard::GameBoard(int boxSize)
 	this->gridSize = boxSize * boxSize;
 }
 
+GameBoard::GameBoard()
+{
+}
+
 void GameBoard::CreateBasicBoard()
 {
 	for (int i = 0; i < gridSize; i++)
@@ -128,6 +132,8 @@ std::vector<std::vector<int>>& GameBoard::GetUserCells()
 
 void GameBoard::CreateTask(int difficulty)
 {
+	this->CreateBasicBoard();
+	this->CreateDecision();
 	int closed;
 	SudokuSolver solver(boxSize);
 	switch (difficulty)
@@ -153,7 +159,7 @@ void GameBoard::CreateTask(int difficulty)
 	std::vector<std::vector<int>> tempCells;
 	for (int i = 0; (i < amountCells) && (closed > 0); i++)
 	{
-		do chosen = rand() % 81;
+		do chosen = rand() % amountCells;
 		while (looked[chosen / gridSize][chosen % gridSize] == 1);
 		looked[chosen / gridSize][chosen % gridSize] = 1;
 		tempCell = userCells[chosen / gridSize][chosen % gridSize];
@@ -170,5 +176,39 @@ void GameBoard::CreateTask(int difficulty)
 	{
 		CreateTask(difficulty);
 	}
+	for (int i = 0; i < gridSize; i++)
+	{
+		for (int j = 0; j < gridSize; j++)
+		{
+			if (userCells[i][j] != 0)
+				blockedCells.push_back(i * gridSize + j);
+		}
+	}
 }
 
+template<class Archive>
+void GameBoard::serialize(Archive& ar, const unsigned int version)
+{
+	ar& readyCells;
+	ar& userCells;
+	ar& blockedCells;
+}
+
+void GameBoard::SaveGameBoard()
+{
+	std::ofstream ofs("Save.dat");
+	boost::archive::text_oarchive ar(ofs);
+	ar & *this;
+	ofs.close();
+}
+
+void GameBoard::LoadGameBoard()
+{
+	std::ifstream ifs("Save.dat");
+	boost::archive::text_iarchive ar(ifs);
+	ar & *this;
+	ifs.close();
+	gridSize = std::size(readyCells[0]);
+	boxSize = pow(gridSize, 0.5);
+	int del = remove("Save.dat");
+}
