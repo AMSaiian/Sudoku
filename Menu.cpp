@@ -1,46 +1,97 @@
 #include "Menu.h"
 
 
-Menu::Menu() {
+Menu::Menu() 
+{
+}
 
-    RenderWindow MenuWindow(VideoMode(800, 800), "Menu");
+void Menu::InitElem()
+{
+	choiceBackTexture.loadFromFile("Resources/backChoice.png");
+	menuTexture.loadFromFile("Resources/Menu.png");
+	buttonNewTexture.loadFromFile("Resources/NewGame.png");
+	buttonLoadTexture.loadFromFile("Resources/LoadGame.png");
+	difficultyTexture.loadFromFile("Resources/Difficulties.png");
 
-    menuTexture.loadFromFile("Menu.png");
-	buttonNewTexture.loadFromFile("NewGame.png");
-    menuSprite.setTexture(menuTexture);
+	menuSprite.setTexture(menuTexture);
 	buttonNewSprite.setTexture(buttonNewTexture);
-    menuSprite.setPosition(0, 0);
+
+	menuSprite.setPosition(0, 0);
 	buttonNewSprite.setPosition(10, 250);
-    MenuWindow.clear();
-    MenuWindow.draw(menuSprite);
-	MenuWindow.draw(buttonNewSprite);
+
+}
+
+bool Menu::CheckSave()
+{
 	std::ifstream check("Save.dat");
-	if (!check.is_open())
+	bool exist = check.is_open();
+	check.close();
+	return exist;
+}
+
+void Menu::DrawElem(bool load, bool choice)
+{
+	MenuWindow.draw(menuSprite);
+	if (choice != 1)
+		MenuWindow.draw(buttonNewSprite);
+	if (load && !choice)
 	{
-		buttonLoadTexture.loadFromFile("LoadGame.png");
 		buttonLoadSprite.setTexture(buttonLoadTexture);
 		buttonLoadSprite.setPosition(20, 350);
 		MenuWindow.draw(buttonLoadSprite);
 	}
-	check.close();
-    MenuWindow.display();
 
+	if (choice)
+	{
+		choiceBackSprite.setTexture(choiceBackTexture);
+		choiceBackSprite.setPosition(0, 0);
+		easySprite.setTexture(difficultyTexture);
+		easySprite.setTextureRect(IntRect(0, 0, 192, 214));
+		easySprite.setPosition(100, 250);
+		mediumSprite.setTexture(difficultyTexture);
+		mediumSprite.setTextureRect(IntRect(192, 0, 192, 214));
+		mediumSprite.setPosition(300, 250);
+		hardSprite.setTexture(difficultyTexture);
+		hardSprite.setTextureRect(IntRect(384, 0, 192, 214));
+		hardSprite.setPosition(500, 250);
+		MenuWindow.draw(choiceBackSprite);
+		MenuWindow.draw(easySprite);
+		MenuWindow.draw(mediumSprite);
+		MenuWindow.draw(hardSprite);
+	}
+}
+
+void Menu::CreateMenu()
+{
+	MenuWindow.create(VideoMode(800, 800), "Menu", sf::Style::Close | sf::Style::Titlebar);
+	bool load = this->CheckSave();
+	bool choice = 0;		
 	while (MenuWindow.isOpen())
 	{
 		while (MenuWindow.pollEvent(MenuEvent))
 		{
 			if (MenuEvent.type == Event::Closed)
 				MenuWindow.close();
-			if (MenuEvent.type == sf::Event::MouseButtonPressed && 
-				buttonNewSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
+			if (MenuEvent.type == sf::Event::MouseButtonPressed &&
+				buttonNewSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))) && !choice)
 			{
-					std::cout << "clicked new game" << "\n";
+				std::cout << "clicked new game" << "\n";
+				choice = 1;
+				buttonNewSprite.~Sprite();
 			}
 			if (MenuEvent.type == sf::Event::MouseButtonPressed &&
-				buttonLoadSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
+				buttonLoadSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))) && !choice)
 			{
-					std::cout << "clicked load game" << "\n";
+				std::cout << "clicked load game" << "\n";
+			}
+			if (MenuEvent.type == sf::Event::MouseButtonPressed &&
+				choiceBackSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
+			{
+				std::cout << "clicked choice back" << "\n";
 			}
 		}
+		InitElem();
+		DrawElem(load, choice);
+		MenuWindow.display();
 	}
 }

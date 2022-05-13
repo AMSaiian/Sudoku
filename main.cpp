@@ -6,4 +6,5 @@
 int main()
 {
 	Menu menu;
+	menu.CreateMenu();
 }
