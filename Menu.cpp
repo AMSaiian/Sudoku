@@ -8,7 +8,7 @@ Menu::Menu()
 void Menu::InitElem()
 {
 	choiceBackTexture.loadFromFile("Resources/backChoice.png");
-	menuTexture.loadFromFile("Resources/Menu.png");
+	menuTexture.loadFromFile("Resources/Phon.png");
 	buttonNewTexture.loadFromFile("Resources/NewGame.png");
 	buttonLoadTexture.loadFromFile("Resources/LoadGame.png");
 	difficultyTexture.loadFromFile("Resources/Difficulties.png");
@@ -63,7 +63,7 @@ void Menu::DrawElem(bool load, bool choice)
 
 void Menu::CreateMenu()
 {
-	MenuWindow.create(VideoMode(800, 800), "Menu", sf::Style::Close | sf::Style::Titlebar);
+	MenuWindow.create(VideoMode(800, 800), "Sudoku", sf::Style::Close | sf::Style::Titlebar);
 	bool load = this->CheckSave();
 	bool choice = 0;		
 	while (MenuWindow.isOpen())
@@ -71,23 +71,27 @@ void Menu::CreateMenu()
 		while (MenuWindow.pollEvent(MenuEvent))
 		{
 			if (MenuEvent.type == Event::Closed)
+			{
 				MenuWindow.close();
-			if (MenuEvent.type == sf::Event::MouseButtonPressed &&
+			}
+			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
 				buttonNewSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))) && !choice)
 			{
-				std::cout << "clicked new game" << "\n";
 				choice = 1;
 				buttonNewSprite.~Sprite();
+				buttonLoadSprite.~Sprite();
 			}
-			if (MenuEvent.type == sf::Event::MouseButtonPressed &&
+			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
 				buttonLoadSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))) && !choice)
 			{
 				std::cout << "clicked load game" << "\n";
 			}
-			if (MenuEvent.type == sf::Event::MouseButtonPressed &&
+			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
 				choiceBackSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
 			{
-				std::cout << "clicked choice back" << "\n";
+				Game game(3);
+				MenuWindow.close();
+				game.CreateGameWindow();
 			}
 		}
 		InitElem();

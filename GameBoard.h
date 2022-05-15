@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
 #include <math.h>
-#include <fstream>;
+#include <fstream>
+#include <random>
 #include <boost/serialization/vector.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -32,6 +33,8 @@ public:
 	void LoadGameBoard();
 	void SaveGameBoard();
 	std::vector<std::vector<int>>& GetUserCells();
-	int GetBoxSize();
+	std::vector<std::vector<int>>& GetReadyCells();
+	int GetGridSize();
+	bool checkBlocked(int cellNumber);
 };
 

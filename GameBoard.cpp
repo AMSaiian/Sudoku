@@ -97,7 +97,7 @@ void GameBoard::TransposingBoard()
 void GameBoard::CreateDecision()
 {
 	int choice;
-	for (int i = 0; i < 25; i++)
+	for (int i = 0; i < 15; i++)
 	{
 		choice = rand() % 5 + 1;
 		switch (choice)
@@ -116,18 +116,44 @@ void GameBoard::CreateDecision()
 				break;
 			case(5):
 				this->TransposingBoard();
-		}		
+				break;
+		}
 	}
-}
-
-int GameBoard::GetBoxSize()
-{
-	return boxSize;
 }
 
 std::vector<std::vector<int>>& GameBoard::GetUserCells()
 {
 	return userCells;
+}
+
+
+std::vector<std::vector<int>>& GameBoard::GetReadyCells()
+{
+	return readyCells;
+}
+
+int GameBoard::GetGridSize()
+{
+	return gridSize;
+}
+
+bool GameBoard::checkBlocked(int cellNumber)
+{
+	int mid = 0;
+	int left = 0;
+	int right = std::size(blockedCells) - 1;
+	while (true)
+	{
+		mid = (left + right) / 2;
+		if (cellNumber < blockedCells[mid])
+			right = mid - 1;
+		else if (cellNumber > blockedCells[mid])
+			left = mid + 1;
+		else
+			return true;
+		if (left > right)
+			return false;
+	}
 }
 
 void GameBoard::CreateTask(int difficulty)

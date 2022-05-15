@@ -5,6 +5,7 @@
 
 int main()
 {
+	srand(time(NULL));
 	Menu menu;
 	menu.CreateMenu();
 }
