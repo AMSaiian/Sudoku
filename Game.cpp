@@ -4,10 +4,10 @@ Game::Game()
 {
 }
 
-Game::Game(int difficulty) 
+Game::Game(int difficulty, SudokuSolver& solver) 
 {
 	this->board = GameBoard(3);
-	board.CreateTask(difficulty);
+	board.CreateTask(difficulty, solver);
 }
 
 void Game::InitElem()

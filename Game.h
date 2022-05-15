@@ -21,6 +21,6 @@ private:
 	void SetTexturesCells();
 public:
 	Game();
-	Game(int difficulty);
+	Game(int difficulty, SudokuSolver& solver);
 	void CreateGameWindow();
 };

@@ -94,10 +94,10 @@ void GameBoard::TransposingBoard()
 	}
 }
 
-void GameBoard::CreateDecision()
+void GameBoard::CreateEasyDecision()
 {
 	int choice;
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < 25; i++)
 	{
 		choice = rand() % 5 + 1;
 		switch (choice)
@@ -119,6 +119,20 @@ void GameBoard::CreateDecision()
 				break;
 		}
 	}
+}
+
+void GameBoard::CreateDecision(SudokuSolver& solver)
+{
+	this->readyCells = std::vector<std::vector<int>>(gridSize, std::vector<int>(gridSize, 0));
+	for (int i = 0; i < gridSize; i++)
+	{
+		this->readyCells[boxSize + i / boxSize][boxSize + i % boxSize] = i + 1;
+	}
+	for (int i = 0; i < gridSize; i++)
+	{
+		std::swap(this->readyCells[boxSize + i / boxSize][boxSize + i % boxSize], this->readyCells[rand() % boxSize + boxSize][rand() % boxSize + boxSize]);
+	}
+	solver.solveSudoku(this->readyCells);
 }
 
 std::vector<std::vector<int>>& GameBoard::GetUserCells()
@@ -156,25 +170,31 @@ bool GameBoard::checkBlocked(int cellNumber)
 	}
 }
 
-void GameBoard::CreateTask(int difficulty)
+void GameBoard::CreateTask(int difficulty, SudokuSolver& solver)
 {
-	this->CreateBasicBoard();
-	this->CreateDecision();
+	if (difficulty == 1)
+	{
+		this->CreateBasicBoard();
+		this->CreateEasyDecision();
+	}
+	else
+	{
+		this->CreateDecision(solver);
+	}
 	int closed;
-	SudokuSolver solver(boxSize);
 	switch (difficulty)
 	{
 	case 1:
-		closed = 35;
+		closed = 50;
 		break;
 	case 2:
-		closed = 45;
-		break;
-	case 3:
 		closed = 55;
 		break;
+	case 3:
+		closed = 64;
+		break;
 	default:
-		closed = 35;
+		closed = 55;
 		break;
 	}
 	int amountCells = gridSize * gridSize;
@@ -200,7 +220,7 @@ void GameBoard::CreateTask(int difficulty)
 	}
 	if (closed != 0)
 	{
-		CreateTask(difficulty);
+		CreateTask(difficulty, solver);
 	}
 	for (int i = 0; i < gridSize; i++)
 	{

@@ -25,11 +25,12 @@ private:
 	void MixDistrictsVertically();
 	void MixDistrictsHorizontally();
 	void TransposingBoard();
-	void CreateDecision();
+	void CreateEasyDecision();
+	void CreateDecision(SudokuSolver &solver);
 public:
 	GameBoard();
 	GameBoard(int boxSize);
-	void CreateTask(int difficulty);
+	void CreateTask(int difficulty, SudokuSolver& solver);
 	void LoadGameBoard();
 	void SaveGameBoard();
 	std::vector<std::vector<int>>& GetUserCells();

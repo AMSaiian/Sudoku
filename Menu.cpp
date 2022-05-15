@@ -12,13 +12,10 @@ void Menu::InitElem()
 	buttonNewTexture.loadFromFile("Resources/NewGame.png");
 	buttonLoadTexture.loadFromFile("Resources/LoadGame.png");
 	difficultyTexture.loadFromFile("Resources/Difficulties.png");
-
 	menuSprite.setTexture(menuTexture);
 	buttonNewSprite.setTexture(buttonNewTexture);
-
 	menuSprite.setPosition(0, 0);
 	buttonNewSprite.setPosition(10, 250);
-
 }
 
 bool Menu::CheckSave()
@@ -89,7 +86,8 @@ void Menu::CreateMenu()
 			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
 				choiceBackSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
 			{
-				Game game(3);
+				SudokuSolver solver(3);
+				Game game(3, solver);
 				MenuWindow.close();
 				game.CreateGameWindow();
 			}
