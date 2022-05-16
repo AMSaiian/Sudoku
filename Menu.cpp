@@ -5,17 +5,20 @@ Menu::Menu()
 {
 }
 
-void Menu::InitElem()
+void Menu::InitElem(bool reload)
 {
 	choiceBackTexture.loadFromFile("Resources/backChoice.png");
 	menuTexture.loadFromFile("Resources/Phon.png");
-	buttonNewTexture.loadFromFile("Resources/NewGame.png");
-	buttonLoadTexture.loadFromFile("Resources/LoadGame.png");
-	difficultyTexture.loadFromFile("Resources/Difficulties.png");
 	menuSprite.setTexture(menuTexture);
-	buttonNewSprite.setTexture(buttonNewTexture);
 	menuSprite.setPosition(0, 0);
-	buttonNewSprite.setPosition(10, 250);
+	if (!reload)
+	{
+		buttonNewTexture.loadFromFile("Resources/NewGame.png");
+		buttonLoadTexture.loadFromFile("Resources/LoadGame.png");
+		buttonNewSprite.setTexture(buttonNewTexture);
+		buttonNewSprite.setPosition(10, 250);
+	}
+	difficultyTexture.loadFromFile("Resources/Difficulties.png");;
 }
 
 bool Menu::CheckSave()
@@ -29,7 +32,7 @@ bool Menu::CheckSave()
 void Menu::DrawElem(bool load, bool choice)
 {
 	MenuWindow.draw(menuSprite);
-	if (choice != 1)
+	if (!choice)
 		MenuWindow.draw(buttonNewSprite);
 	if (load && !choice)
 	{
@@ -78,9 +81,12 @@ void Menu::CreateMenu()
 	MenuWindow.create(VideoMode(800, 800), "Sudoku", sf::Style::Close | sf::Style::Titlebar);
 	bool load = this->CheckSave();
 	bool choice = 0;
+	InitElem(false);
+	DrawElem(load, choice);
+	MenuWindow.display();
 	while (MenuWindow.isOpen())
 	{
-		while (MenuWindow.pollEvent(MenuEvent))
+		if (MenuWindow.waitEvent(MenuEvent))
 		{
 			if (MenuEvent.type == Event::Closed)
 			{
@@ -114,8 +120,44 @@ void Menu::CreateMenu()
 				PrepareGame(3);
 			}
 		}
-		InitElem();
+		InitElem(false);
 		DrawElem(load, choice);
+		MenuWindow.display();
+	}
+}
+
+void Menu::MenuForReload()
+{
+	MenuWindow.create(VideoMode(800, 800), "Sudoku", sf::Style::Close | sf::Style::Titlebar);
+	InitElem(true);
+	DrawElem(false, true);
+	MenuWindow.display();
+	while (MenuWindow.isOpen())
+	{
+		if (MenuWindow.waitEvent(MenuEvent))
+		{
+			if (MenuEvent.type == Event::Closed)
+			{
+				MenuWindow.close();
+			}
+			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
+				easySprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
+			{
+				PrepareGame(1);
+			}
+			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
+				mediumSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
+			{
+				PrepareGame(2);
+			}
+			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
+				hardSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
+			{
+				PrepareGame(3);
+			}
+		}
+		InitElem(false);
+		DrawElem(false, true);
 		MenuWindow.display();
 	}
 }

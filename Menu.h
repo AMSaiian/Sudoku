@@ -13,7 +13,7 @@ private:
 	Texture menuTexture, buttonNewTexture, buttonLoadTexture, choiceBackTexture, difficultyTexture;
 	Sprite menuSprite, buttonNewSprite, buttonLoadSprite, choiceBackSprite, easySprite, mediumSprite, hardSprite;
 	Event MenuEvent{};
-	void InitElem();
+	void InitElem(bool reload);
 	bool CheckSave();
 	void DrawElem(bool load, bool choice);
 	void PrepareGameWithLoad();
@@ -21,4 +21,5 @@ private:
 public:
 	Menu();
 	void CreateMenu();
+	void MenuForReload();
 };

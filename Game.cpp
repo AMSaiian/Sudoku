@@ -34,6 +34,12 @@ void Game::InitElem()
 	saveSprite.setTexture(returnTextures);
 	saveSprite.setTextureRect(IntRect(53, 0, 53, 53));
 	saveSprite.setPosition(722, 20);
+	reloadSprite.setTexture(returnTextures);
+	reloadSprite.setTextureRect(IntRect(106, 0, 53, 53));
+	reloadSprite.setPosition(25, 103);
+	winTexture.loadFromFile("Resources/Win.png");
+	winSprite.setTexture(winTexture);
+	winReturnTextures.loadFromFile("Resources/WinReturn.png");
 	Sprite cellSprite;
 	int gapX = 0;
 	int gapY = 0;
@@ -75,6 +81,23 @@ void Game::DrawElem()
 	GameWindow.draw(chosenSprite);
 	GameWindow.draw(saveSprite);
 	GameWindow.draw(toMenuSprite);
+	GameWindow.draw(reloadSprite);
+}
+
+void Game::DrawWin()
+{
+	GameWindow.draw(backSprite);
+	GameWindow.draw(winSprite);
+	toMenuSprite.setTexture(winReturnTextures);
+	reloadSprite.setTexture(winReturnTextures);
+	toMenuSprite.setTextureRect(IntRect(200, 0, 200, 200));
+	reloadSprite.setTextureRect(IntRect(0, 0, 200, 200));
+	toMenuSprite.setTextureRect(IntRect(200, 0, 200, 200));
+	toMenuSprite.setPosition(100, 500);
+	reloadSprite.setPosition(500, 500);
+	saveSprite.~Sprite();
+	GameWindow.draw(toMenuSprite);
+	GameWindow.draw(reloadSprite);
 }
 
 void Game::CreateGameWindow()
@@ -82,12 +105,13 @@ void Game::CreateGameWindow()
 	GameWindow.create(VideoMode(800, 800), "Sudoku", sf::Style::Close | sf::Style::Titlebar);
 	this->InitElem();
 	int number = 1;
+	bool win = false;
 	while (GameWindow.isOpen())
 	{
 		Vector2i click = Mouse::getPosition(GameWindow);
 		int i = (click.y - 54) / 66;
 		int j = (click.x - 105) / 66;
-		while (GameWindow.pollEvent(GameEvent))
+		if (GameWindow.waitEvent(GameEvent))
 		{
 			if (GameEvent.type == Event::Closed)
 				GameWindow.close();
@@ -112,7 +136,11 @@ void Game::CreateGameWindow()
 				{
 					if (!board.checkBlocked(i * board.GetGridSize() + j))
 						board.GetUserCells()[i][j] = 0;
-				}	
+				}
+				if (board.GetUserCells() == board.GetReadyCells())
+				{
+					win = true;
+				}
 			}
 			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left &&
 				toMenuSprite.getGlobalBounds().contains(GameWindow.mapPixelToCoords(click)))
@@ -121,15 +149,26 @@ void Game::CreateGameWindow()
 				Menu menu;
 				menu.CreateMenu();
 			}
-			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left &&
+			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left && !win &&
 				saveSprite.getGlobalBounds().contains(GameWindow.mapPixelToCoords(click)))
 			{
 				board.SaveGameBoard();
 			}
+			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left &&
+				reloadSprite.getGlobalBounds().contains(GameWindow.mapPixelToCoords(click)))
+			{
+				GameWindow.close();
+				Menu reloadMenu;
+				reloadMenu.MenuForReload();
+			}
 		}
-		DrawElem();
-		SetTexturesCells();
+		if (!win)
+		{
+			DrawElem();
+			SetTexturesCells();
+		}
+		else
+			DrawWin();
 		GameWindow.display();
 	}
 }
-
