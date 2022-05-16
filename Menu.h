@@ -16,6 +16,8 @@ private:
 	void InitElem();
 	bool CheckSave();
 	void DrawElem(bool load, bool choice);
+	void PrepareGameWithLoad();
+	void PrepareGame(int difficulty);
 public:
 	Menu();
 	void CreateMenu();

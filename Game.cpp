@@ -2,6 +2,8 @@
 
 Game::Game()
 {
+	this->board = GameBoard(3);
+	this->board.LoadGameBoard();
 }
 
 Game::Game(int difficulty, SudokuSolver& solver) 
@@ -25,6 +27,13 @@ void Game::InitElem()
 	chosenTexture.loadFromFile("Resources/Chosen.png");
 	chosenSprite.setTexture(chosenTexture);
 	chosenSprite.setPosition(70, 700);
+	returnTextures.loadFromFile("Resources/Return.png");
+	toMenuSprite.setTexture(returnTextures);
+	toMenuSprite.setTextureRect(IntRect(0, 0, 53, 53));
+	toMenuSprite.setPosition(25, 20);
+	saveSprite.setTexture(returnTextures);
+	saveSprite.setTextureRect(IntRect(53, 0, 53, 53));
+	saveSprite.setPosition(722, 20);
 	Sprite cellSprite;
 	int gapX = 0;
 	int gapY = 0;
@@ -56,6 +65,16 @@ void Game::SetTexturesCells()
 		cellsSprite[i].setTextureRect(IntRect(66 * digit, 0, 66, 66));
 		GameWindow.draw(cellsSprite[i]);
 	}
+}
+
+void Game::DrawElem()
+{
+	GameWindow.draw(backSprite);
+	GameWindow.draw(gridSprite);
+	GameWindow.draw(digitsSprite);
+	GameWindow.draw(chosenSprite);
+	GameWindow.draw(saveSprite);
+	GameWindow.draw(toMenuSprite);
 }
 
 void Game::CreateGameWindow()
@@ -95,11 +114,20 @@ void Game::CreateGameWindow()
 						board.GetUserCells()[i][j] = 0;
 				}	
 			}
+			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left &&
+				toMenuSprite.getGlobalBounds().contains(GameWindow.mapPixelToCoords(click)))
+			{
+				GameWindow.close();
+				Menu menu;
+				menu.CreateMenu();
+			}
+			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left &&
+				saveSprite.getGlobalBounds().contains(GameWindow.mapPixelToCoords(click)))
+			{
+				board.SaveGameBoard();
+			}
 		}
-		GameWindow.draw(backSprite);
-		GameWindow.draw(gridSprite);
-		GameWindow.draw(digitsSprite);
-		GameWindow.draw(chosenSprite);
+		DrawElem();
 		SetTexturesCells();
 		GameWindow.display();
 	}

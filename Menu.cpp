@@ -58,11 +58,26 @@ void Menu::DrawElem(bool load, bool choice)
 	}
 }
 
+void Menu::PrepareGameWithLoad()
+{
+	Game game;
+	MenuWindow.close();
+	game.CreateGameWindow();
+}
+
+void Menu::PrepareGame(int difficulty)
+{
+	SudokuSolver solver(3);
+	Game game(difficulty, solver);
+	MenuWindow.close();
+	game.CreateGameWindow();
+}
+
 void Menu::CreateMenu()
 {
 	MenuWindow.create(VideoMode(800, 800), "Sudoku", sf::Style::Close | sf::Style::Titlebar);
 	bool load = this->CheckSave();
-	bool choice = 0;		
+	bool choice = 0;
 	while (MenuWindow.isOpen())
 	{
 		while (MenuWindow.pollEvent(MenuEvent))
@@ -81,15 +96,22 @@ void Menu::CreateMenu()
 			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
 				buttonLoadSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))) && !choice)
 			{
-				std::cout << "clicked load game" << "\n";
+				PrepareGameWithLoad();
 			}
 			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
-				choiceBackSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
+				easySprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
 			{
-				SudokuSolver solver(3);
-				Game game(3, solver);
-				MenuWindow.close();
-				game.CreateGameWindow();
+				PrepareGame(1);
+			}
+			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
+				mediumSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
+			{
+				PrepareGame(2);
+			}
+			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
+				hardSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))))
+			{
+				PrepareGame(3);
 			}
 		}
 		InitElem();

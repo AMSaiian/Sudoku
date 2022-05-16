@@ -12,13 +12,14 @@ class Game
 {
 private:
 	RenderWindow GameWindow;
-	Texture backTexture, buttonPauseTexture, gridTexture, cellTextures, chosenTexture;
-	Sprite backSprite, buttonPauseSprite, gridSprite, digitsSprite, chosenSprite;
+	Texture backTexture, buttonPauseTexture, gridTexture, cellTextures, chosenTexture, returnTextures;
+	Sprite backSprite, buttonPauseSprite, gridSprite, digitsSprite, chosenSprite, toMenuSprite, saveSprite;
 	std::vector<Sprite> cellsSprite;
 	GameBoard board;
 	Event GameEvent{};
 	void InitElem();
 	void SetTexturesCells();
+	void DrawElem();
 public:
 	Game();
 	Game(int difficulty, SudokuSolver& solver);
