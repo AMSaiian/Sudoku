@@ -123,16 +123,16 @@ void GameBoard::CreateEasyDecision()
 
 void GameBoard::CreateDecision(SudokuSolver& solver)
 {
-	this->readyCells = std::vector<std::vector<int>>(gridSize, std::vector<int>(gridSize, 0));
+	readyCells = std::vector<std::vector<int>>(gridSize, std::vector<int>(gridSize, 0));
 	for (int i = 0; i < gridSize; i++)
 	{
-		this->readyCells[boxSize + i / boxSize][boxSize + i % boxSize] = i + 1;
+		readyCells[boxSize + i / boxSize][boxSize + i % boxSize] = i + 1;
 	}
 	for (int i = 0; i < gridSize; i++)
 	{
-		std::swap(this->readyCells[boxSize + i / boxSize][boxSize + i % boxSize], this->readyCells[rand() % boxSize + boxSize][rand() % boxSize + boxSize]);
+		std::swap(readyCells[boxSize + i / boxSize][boxSize + i % boxSize], readyCells[rand() % boxSize + boxSize][rand() % boxSize + boxSize]);
 	}
-	solver.solveSudoku(this->readyCells);
+	solver.solveSudoku(readyCells);
 }
 
 std::vector<std::vector<int>>& GameBoard::GetUserCells()
@@ -172,29 +172,26 @@ bool GameBoard::checkBlocked(int cellNumber)
 
 void GameBoard::CreateTask(int difficulty, SudokuSolver& solver)
 {
-	if (difficulty == 1)
-	{
-		this->CreateBasicBoard();
-		this->CreateEasyDecision();
-	}
-	else
-	{
-		this->CreateDecision(solver);
-	}
 	int closed;
 	switch (difficulty)
 	{
 	case 1:
+		this->CreateBasicBoard();
+		this->CreateEasyDecision();
 		closed = 50;
 		break;
 	case 2:
-		closed = 55;
+		this->CreateDecision(solver);
+		closed = 50;
 		break;
 	case 3:
-		closed = 64;
+		this->CreateDecision(solver);
+		closed = 55;
 		break;
 	default:
-		closed = 55;
+		this->CreateBasicBoard();
+		this->CreateEasyDecision();
+		closed = 50;
 		break;
 	}
 	int amountCells = gridSize * gridSize;
@@ -212,9 +209,9 @@ void GameBoard::CreateTask(int difficulty, SudokuSolver& solver)
 		std::tuple<int, int, int> limitation(chosen / gridSize, chosen % gridSize, tempCell);
 		tempCells = userCells;
 		tempCells[chosen / gridSize][chosen % gridSize] = 0;
-		if (solver.solveSudoku(tempCells, limitation) == std::vector<std::vector<int>>(gridSize, std::vector<int>(gridSize, 0)))
+		if (solver.solveSudoku(tempCells, limitation)[0][0] == 0)
 		{
-			userCells = tempCells;
+			userCells[chosen / gridSize][chosen % gridSize] = 0;
 			closed--;
 		}
 	}

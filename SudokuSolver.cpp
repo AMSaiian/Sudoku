@@ -13,7 +13,7 @@ std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<
 	std::vector<std::tuple<std::string, std::tuple <int, int>>> tempRow;
 	if (limitation != std::tuple<int, int, int>())
 	{
-		std::vector<std::tuple<std::string, std::tuple <int, int>>> tempRow(tableRows[limitation]);
+		tempRow = tableRows[limitation];
 		tableRows.erase(limitation);
 	}
 	fillColumns();
@@ -30,7 +30,8 @@ std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<
 		}
 	}
 	solution = alghorithmX(solution);
-	tableRows[limitation] = tempRow;
+	if (!tempRow.empty())
+		tableRows[limitation] = tempRow;
 	if (solution.empty())
 	{
 		return std::vector<std::vector<int>>(gridSize, std::vector<int>(gridSize, 0));
