@@ -13,13 +13,13 @@ class Game
 private:
 	RenderWindow GameWindow;
 	Texture backTexture, winTexture, buttonPauseTexture, gridTexture, cellTextures, chosenTexture, returnTextures, winReturnTextures;
-	Sprite backSprite, winSprite, buttonPauseSprite, gridSprite, digitsSprite, chosenSprite, toMenuSprite, saveSprite, reloadSprite;
+	Sprite backSprite, winSprite, buttonPauseSprite, gridSprite, digitsSprite, chosenSprite, toMenuSprite, saveSprite, reloadSprite, autoSprite;
 	std::vector<Sprite> cellsSprite;
 	GameBoard board;
 	Event GameEvent{};
 	void InitElem();
 	void SetTexturesCells();
-	void DrawElem();
+	void DrawElem(bool autoSolve);
 	void DrawWin();
 public:
 	Game();

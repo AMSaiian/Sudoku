@@ -40,6 +40,9 @@ void Game::InitElem()
 	winTexture.loadFromFile("Resources/Win.png");
 	winSprite.setTexture(winTexture);
 	winReturnTextures.loadFromFile("Resources/WinReturn.png");
+    autoSprite.setTexture(returnTextures);
+	autoSprite.setTextureRect(IntRect(159, 0, 53, 53));
+	autoSprite.setPosition(25, 186);
 	Sprite cellSprite;
 	int gapX = 0;
 	int gapY = 0;
@@ -73,15 +76,19 @@ void Game::SetTexturesCells()
 	}
 }
 
-void Game::DrawElem()
+void Game::DrawElem(bool autoSolve)
 {
 	GameWindow.draw(backSprite);
 	GameWindow.draw(gridSprite);
-	GameWindow.draw(digitsSprite);
-	GameWindow.draw(chosenSprite);
-	GameWindow.draw(saveSprite);
 	GameWindow.draw(toMenuSprite);
 	GameWindow.draw(reloadSprite);
+	if (!autoSolve)
+	{
+		GameWindow.draw(autoSprite);
+		GameWindow.draw(digitsSprite);
+		GameWindow.draw(chosenSprite);
+		GameWindow.draw(saveSprite);
+	}
 }
 
 void Game::DrawWin()
@@ -106,6 +113,7 @@ void Game::CreateGameWindow()
 	this->InitElem();
 	int number = 1;
 	bool win = false;
+	bool autoSolve = false;
 	while (GameWindow.isOpen())
 	{
 		Vector2i click = Mouse::getPosition(GameWindow);
@@ -115,14 +123,14 @@ void Game::CreateGameWindow()
 		{
 			if (GameEvent.type == Event::Closed)
 				GameWindow.close();
-			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left &&
+			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left && !win && !autoSolve &&
 				digitsSprite.getGlobalBounds().contains(GameWindow.mapPixelToCoords(click)))
 			{
 				number = (click.x - 70) / 66;
 				chosenSprite.setPosition(70 + 66 * number, 700);
 				number++;
 			}
-			if (GameEvent.type == sf::Event::MouseButtonPressed &&
+			if (GameEvent.type == sf::Event::MouseButtonPressed && !win && !autoSolve &&
 				gridSprite.getGlobalBounds().contains(GameWindow.mapPixelToCoords(click)))
 			{
 				if (GameEvent.mouseButton.button == sf::Mouse::Left)
@@ -149,7 +157,7 @@ void Game::CreateGameWindow()
 				Menu menu;
 				menu.CreateMenu();
 			}
-			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left && !win &&
+			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left && !win && !autoSolve &&
 				saveSprite.getGlobalBounds().contains(GameWindow.mapPixelToCoords(click)))
 			{
 				board.SaveGameBoard();
@@ -161,10 +169,16 @@ void Game::CreateGameWindow()
 				Menu reloadMenu;
 				reloadMenu.MenuForReload();
 			}
+			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left && !win && !autoSolve &&
+				autoSprite.getGlobalBounds().contains(GameWindow.mapPixelToCoords(click)))
+			{
+				autoSolve = true;
+				board.GetUserCells() = board.GetReadyCells();
+			}
 		}
 		if (!win)
 		{
-			DrawElem();
+			DrawElem(autoSolve);
 			SetTexturesCells();
 		}
 		else
