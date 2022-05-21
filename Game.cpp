@@ -2,12 +2,14 @@
 
 Game::Game()
 {
+	this->solver = SudokuSolver(3);
 	this->board = GameBoard(3);
 	this->board.LoadGameBoard();
 }
 
-Game::Game(int difficulty, SudokuSolver& solver) 
+Game::Game(int difficulty) 
 {
+	this->solver = SudokuSolver(3);
 	this->board = GameBoard(3);
 	board.CreateTask(difficulty, solver);
 }
@@ -74,6 +76,8 @@ void Game::SetTexturesCells()
 		cellsSprite[i].setTextureRect(IntRect(66 * digit, 0, 66, 66));
 		GameWindow.draw(cellsSprite[i]);
 	}
+	for (int i = 0; i < std::size(chosenCells); i++)
+		GameWindow.draw(chosenCells[i]);
 }
 
 void Game::DrawElem(bool autoSolve)
@@ -107,6 +111,42 @@ void Game::DrawWin()
 	GameWindow.draw(reloadSprite);
 }
 
+void Game::PointUncorrect()
+{
+	chosenCells.clear();
+	Sprite uncorrectSprite;
+	uncorrectSprite.setTexture(chosenTexture);
+	int gridSize = board.GetGridSize();
+	for (int i = 0; i < gridSize; i++)
+	{
+		for (int j = 0; j < gridSize; j++)
+		{
+			if (board.GetUserCells()[i][j] == 0)
+				continue;
+			else if (board.GetUserCells()[i][j] != board.GetReadyCells()[i][j])
+			{
+				uncorrectSprite.setPosition(cellsSprite[i * gridSize + j].getPosition());
+				chosenCells.push_back(uncorrectSprite);
+			}
+		}
+	}
+}
+
+void Game::UnpointUncorrect(Vector2f cell)
+{
+	std::vector<Sprite>::iterator itU;
+	for (int i = 0; i < std::size(chosenCells); i++)
+	{
+		if (cell == chosenCells[i].getPosition())
+		{
+			itU = chosenCells.begin() + i;
+			chosenCells.erase(itU);
+			return;
+		}
+	}
+}
+
+
 void Game::CreateGameWindow()
 {
 	GameWindow.create(VideoMode(800, 800), "Sudoku", sf::Style::Close | sf::Style::Titlebar);
@@ -114,6 +154,7 @@ void Game::CreateGameWindow()
 	int number = 1;
 	bool win = false;
 	bool autoSolve = false;
+	bool same = false;
 	while (GameWindow.isOpen())
 	{
 		Vector2i click = Mouse::getPosition(GameWindow);
@@ -126,28 +167,43 @@ void Game::CreateGameWindow()
 			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left && !win && !autoSolve &&
 				digitsSprite.getGlobalBounds().contains(GameWindow.mapPixelToCoords(click)))
 			{
-				number = (click.x - 70) / 66;
-				chosenSprite.setPosition(70 + 66 * number, 700);
-				number++;
+				if ((click.x - 70) / 66 != 9)
+				{
+					number = (click.x - 70) / 66;
+					chosenSprite.setPosition(70 + 66 * number, 700);
+					number++;
+				}
+				else 
+				{
+					if (solver.solveSudoku(board.GetUserCells())[0][0])
+					{
+						std::tuple<int, int> cell = solver.findCellForHint(board.GetUserCells());
+						board.GetUserCells()[std::get<0>(cell)][std::get<1>(cell)] = board.GetReadyCells()[std::get<0>(cell)][std::get<1>(cell)];
+						board.insertToBlocked(std::get<0>(cell) * board.GetGridSize() + std::get<1>(cell));
+					}
+					else
+						PointUncorrect();
+				}
 			}
 			if (GameEvent.type == sf::Event::MouseButtonPressed && !win && !autoSolve &&
 				gridSprite.getGlobalBounds().contains(GameWindow.mapPixelToCoords(click)))
 			{
 				if (GameEvent.mouseButton.button == sf::Mouse::Left)
 				{
-					if (!board.checkBlocked(i * board.GetGridSize() + j) && number != 10)
+					if (!board.checkBlocked(i * board.GetGridSize() + j))
+					{
+						same = board.GetUserCells()[i][j] == number;
 						board.GetUserCells()[i][j] = number;
-					else if (number == 10)
-						board.GetUserCells()[i][j] = board.GetReadyCells()[i][j];
+					}
+					if (std::size(chosenCells) && !same)
+						UnpointUncorrect(cellsSprite[i * board.GetGridSize() + j].getPosition());
 				}
 				else if (GameEvent.mouseButton.button == sf::Mouse::Right)
 				{
 					if (!board.checkBlocked(i * board.GetGridSize() + j))
 						board.GetUserCells()[i][j] = 0;
-				}
-				if (board.GetUserCells() == board.GetReadyCells())
-				{
-					win = true;
+					if (std::size(chosenCells))
+						UnpointUncorrect(cellsSprite[i * board.GetGridSize() + j].getPosition());
 				}
 			}
 			if (GameEvent.type == sf::Event::MouseButtonPressed && GameEvent.mouseButton.button == sf::Mouse::Left &&
@@ -175,6 +231,10 @@ void Game::CreateGameWindow()
 				autoSolve = true;
 				board.GetUserCells() = board.GetReadyCells();
 			}
+		}
+		if (board.GetUserCells() == board.GetReadyCells() && !autoSolve)
+		{
+			win = true;
 		}
 		if (!win)
 		{

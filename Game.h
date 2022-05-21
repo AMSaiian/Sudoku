@@ -15,14 +15,18 @@ private:
 	Texture backTexture, winTexture, buttonPauseTexture, gridTexture, cellTextures, chosenTexture, returnTextures, winReturnTextures;
 	Sprite backSprite, winSprite, buttonPauseSprite, gridSprite, digitsSprite, chosenSprite, toMenuSprite, saveSprite, reloadSprite, autoSprite;
 	std::vector<Sprite> cellsSprite;
-	GameBoard board;
+	std::vector<Sprite> chosenCells;
 	Event GameEvent{};
+	GameBoard board;
+	SudokuSolver solver;
 	void InitElem();
 	void SetTexturesCells();
 	void DrawElem(bool autoSolve);
 	void DrawWin();
+	void PointUncorrect();
+	void UnpointUncorrect(Vector2f cell);
 public:
 	Game();
-	Game(int difficulty, SudokuSolver& solver);
+	Game(int difficulty);
 	void CreateGameWindow();
 };

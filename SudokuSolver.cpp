@@ -49,6 +49,39 @@ std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<
 	return grid;
 }
 
+std::tuple<int, int> SudokuSolver::findCellForHint(std::vector<std::vector<int>> grid)
+{
+	if (tableRows.empty())
+		fillRows();
+	fillColumns();
+	for (int i = 0; i < gridSize; i++)
+	{
+		for (int j = 0; j < gridSize; j++)
+		{
+			if (grid[i][j])
+			{
+				select(std::tuple<int, int, int>(i, j, grid[i][j]));
+			}
+		}
+	}
+	int amCandidates = 10;
+	std::tuple<int, int> cell;
+	std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<std::tuple<int, int, int>>>::iterator itC = tableColumns.begin();
+	std::advance(itC, std::size(tableColumns) / 2);
+	for (int i = 0; i < std::size(tableColumns) / 4; i++)
+	{
+		if (itC->second.size() < amCandidates)
+		{
+			amCandidates = itC->second.size();
+			cell = std::get<1>(itC->first);
+			//if (amCandidates == 1)
+				//break;
+		}
+		itC++;
+	}
+	return cell;
+}
+
 void SudokuSolver::fillRows()
 {
 	for (int number = 1; number < gridSize + 1; number++)
@@ -71,6 +104,7 @@ void SudokuSolver::fillRows()
 
 void SudokuSolver::fillColumns()
 {
+	tableColumns.clear();
 	std::map<std::tuple<int, int, int>, std::vector<std::tuple<std::string, std::tuple<int, int>>>> ::iterator itR = tableRows.begin();
 	for (int i = 0; i < std::size(tableRows); i++)
 	{

@@ -70,8 +70,7 @@ void Menu::PrepareGameWithLoad()
 
 void Menu::PrepareGame(int difficulty)
 {
-	SudokuSolver solver(3);
-	Game game(difficulty, solver);
+	Game game(difficulty);
 	MenuWindow.close();
 	game.CreateGameWindow();
 }

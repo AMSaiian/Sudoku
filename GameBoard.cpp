@@ -170,6 +170,12 @@ bool GameBoard::checkBlocked(int cellNumber)
 	}
 }
 
+void GameBoard::insertToBlocked(int cellNumber)
+{
+	std::vector<int>::iterator it = std::lower_bound(blockedCells.begin(), blockedCells.end(), cellNumber);
+	blockedCells.insert(it, cellNumber);
+}
+
 void GameBoard::CreateTask(int difficulty, SudokuSolver& solver)
 {
 	int closed;

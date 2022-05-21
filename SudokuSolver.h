@@ -19,6 +19,7 @@ private:
 	std::vector<std::tuple<int, int, int>>
 		alghorithmX(std::vector<std::tuple<int, int, int>> cover = std::vector<std::tuple<int, int, int>>());
 public:
-	SudokuSolver(int boxSize);
+	SudokuSolver(int boxSize = 3);
 	std::vector<std::vector<int>> solveSudoku(std::vector<std::vector<int>> grid, std::tuple<int, int, int> limitation = std::tuple<int, int, int>());
+	std::tuple<int, int> findCellForHint(std::vector<std::vector<int>> grid);
 };

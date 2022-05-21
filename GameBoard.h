@@ -37,5 +37,6 @@ public:
 	std::vector<std::vector<int>>& GetReadyCells();
 	int GetGridSize();
 	bool checkBlocked(int cellNumber);
+	void insertToBlocked(int cellNumber);
 };
 
