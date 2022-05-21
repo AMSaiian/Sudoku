@@ -6,7 +6,7 @@ SudokuSolver::SudokuSolver(int boxSize)
 	this->gridSize = boxSize * boxSize;
 }
 
-std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<int>> &grid, std::tuple<int,int,int> limitation)
+std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<int>> grid, std::tuple<int,int,int> limitation)
 {
 	if (tableRows.empty())
 		fillRows();
@@ -71,65 +71,18 @@ void SudokuSolver::fillRows()
 
 void SudokuSolver::fillColumns()
 {
-	std::vector<std::tuple<std::string, std::tuple<int, int>>> tempColumns;
-	std::tuple<std::string, std::tuple<int, int>> tempTuple;
-	std::string limitation = "rc";
-	for (int i = 0; i < gridSize; i++)
-	{
-		for (int j = 0; j < gridSize; j++)
-		{
-			std::get<0>(tempTuple) = limitation;
-			std::get<0>(std::get<1>(tempTuple)) = i;
-			std::get<1>(std::get<1>(tempTuple)) = j;
-			tempColumns.push_back(tempTuple);
-		}
-	}
-	limitation = "rn";
-	for (int i = 0; i < gridSize; i++)
-	{
-		for (int j = 1; j < gridSize + 1; j++)
-		{
-			std::get<0>(tempTuple) = limitation;
-			std::get<0>(std::get<1>(tempTuple)) = i;
-			std::get<1>(std::get<1>(tempTuple)) = j;
-			tempColumns.push_back(tempTuple);
-		}
-	}
-	limitation = "cn";
-	for (int i = 0; i < gridSize; i++)
-	{
-		for (int j = 1; j < gridSize + 1; j++)
-		{
-			std::get<0>(tempTuple) = limitation;
-			std::get<0>(std::get<1>(tempTuple)) = i;
-			std::get<1>(std::get<1>(tempTuple)) = j;
-			tempColumns.push_back(tempTuple);
-		}
-	}
-	limitation = "bn";
-	for (int i = 0; i < gridSize; i++)
-	{
-		for (int j = 1; j < gridSize + 1; j++)
-		{
-			std::get<0>(tempTuple) = limitation;
-			std::get<0>(std::get<1>(tempTuple)) = i;
-			std::get<1>(std::get<1>(tempTuple)) = j;
-			tempColumns.push_back(tempTuple);
-		}
-	}
 	std::map<std::tuple<int, int, int>, std::vector<std::tuple<std::string, std::tuple<int, int>>>> ::iterator itR = tableRows.begin();
 	for (int i = 0; i < std::size(tableRows); i++)
 	{
-		std::tuple<int, int, int> key = itR->first;
-		std::vector<std::tuple<std::string, std::tuple<int, int>>> value = itR->second;
-		for (int j = 0; j < std::size(value); j++)
+		std::tuple<int, int, int> value = itR->first;
+		std::vector<std::tuple<std::string, std::tuple<int, int>>> key = itR->second;
+		for (int j = 0; j < std::size(key); j++)
 		{
-			tableColumns[value[j]].insert(key);
+			tableColumns[key[j]].insert(value);
 		}
 		itR++;
 	}
 }
-
 
 std::vector<std::set<std::tuple<int, int, int>>> SudokuSolver::select(std::tuple<int, int, int> row)
 {

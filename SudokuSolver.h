@@ -20,5 +20,5 @@ private:
 		alghorithmX(std::vector<std::tuple<int, int, int>> cover = std::vector<std::tuple<int, int, int>>());
 public:
 	SudokuSolver(int boxSize);
-	std::vector<std::vector<int>> solveSudoku(std::vector<std::vector<int>>& grid, std::tuple<int, int, int> limitation = std::tuple<int, int, int>());
+	std::vector<std::vector<int>> solveSudoku(std::vector<std::vector<int>> grid, std::tuple<int, int, int> limitation = std::tuple<int, int, int>());
 };

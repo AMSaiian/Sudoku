@@ -132,7 +132,7 @@ void GameBoard::CreateDecision(SudokuSolver& solver)
 	{
 		std::swap(readyCells[boxSize + i / boxSize][boxSize + i % boxSize], readyCells[rand() % boxSize + boxSize][rand() % boxSize + boxSize]);
 	}
-	solver.solveSudoku(readyCells);
+	readyCells = solver.solveSudoku(readyCells);
 }
 
 std::vector<std::vector<int>>& GameBoard::GetUserCells()
