@@ -113,7 +113,6 @@ void Game::DrawWin()
 
 void Game::PointUncorrect()
 {
-	chosenCells.clear();
 	Sprite uncorrectSprite;
 	uncorrectSprite.setTexture(chosenTexture);
 	int gridSize = board.GetGridSize();

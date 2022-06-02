@@ -94,7 +94,7 @@ void Menu::CreateMenu()
 			if (MenuEvent.type == sf::Event::MouseButtonPressed && MenuEvent.mouseButton.button == sf::Mouse::Left &&
 				buttonNewSprite.getGlobalBounds().contains(MenuWindow.mapPixelToCoords(Mouse::getPosition(MenuWindow))) && !choice)
 			{
-				choice = 1;
+				choice = true;
 				buttonNewSprite.~Sprite();
 				buttonLoadSprite.~Sprite();
 			}

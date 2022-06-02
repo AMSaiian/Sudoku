@@ -39,4 +39,3 @@ public:
 	bool checkBlocked(int cellNumber);
 	void insertToBlocked(int cellNumber);
 };
-

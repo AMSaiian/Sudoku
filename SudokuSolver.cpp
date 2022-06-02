@@ -74,8 +74,8 @@ std::tuple<int, int> SudokuSolver::findCellForHint(std::vector<std::vector<int>>
 		{
 			amCandidates = itC->second.size();
 			cell = std::get<1>(itC->first);
-			//if (amCandidates == 1)
-				//break;
+			if (amCandidates == 1)
+				break;
 		}
 		itC++;
 	}
