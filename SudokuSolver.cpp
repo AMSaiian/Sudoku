@@ -10,7 +10,7 @@ std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<
 {
 	if (tableRows.empty())
 		fillRows();
-	std::vector<std::tuple<std::string, std::tuple <int, int>>> tempRow;
+	std::vector<std::tuple<int, int, int>> tempRow;
 	if (limitation != std::tuple<int, int, int>())
 	{
 		tempRow = tableRows[limitation];
@@ -18,14 +18,16 @@ std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<
 	}
 	fillColumns();
 	std::vector<std::tuple<int, int, int>> solution;
+	std::tuple<int, int, int> tempCell;
 	for (int i = 0; i < gridSize; i++)
 	{
 		for (int j = 0; j < gridSize; j++)
 		{
 			if (grid[i][j])
 			{
-				solution.push_back(std::tuple<int, int, int>(i, j, grid[i][j]));
-				select(std::tuple<int, int, int>(i, j, grid[i][j]));
+				tempCell = { i, j, grid[i][j] };
+				solution.push_back(tempCell);
+				select(tempCell);
 			}
 		}
 	}
@@ -38,11 +40,14 @@ std::vector<std::vector<int>> SudokuSolver::solveSudoku(std::vector<std::vector<
 	}
 	else
 	{
+		int row;
+		int column;
+		int number;
 		for (int i = 0; i < size(solution); i++)
 		{
-			int row = std::get<0>(solution[i]);
-			int column = std::get<1>(solution[i]);
-			int number = std::get<2>(solution[i]);
+			row = std::get<0>(solution[i]);
+			column = std::get<1>(solution[i]);
+			number = std::get<2>(solution[i]);
 			grid[row][column] = number;
 		}
 	}
@@ -54,26 +59,27 @@ std::tuple<int, int> SudokuSolver::findCellForHint(std::vector<std::vector<int>>
 	if (tableRows.empty())
 		fillRows();
 	fillColumns();
+	std::tuple<int, int, int> tempCell;
 	for (int i = 0; i < gridSize; i++)
 	{
 		for (int j = 0; j < gridSize; j++)
 		{
 			if (grid[i][j])
 			{
-				select(std::tuple<int, int, int>(i, j, grid[i][j]));
+				tempCell = { i, j, grid[i][j] };
+				select(tempCell);
 			}
 		}
 	}
 	int amCandidates = 10;
 	std::tuple<int, int> cell;
-	std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<std::tuple<int, int, int>>>::iterator itC = tableColumns.begin();
-	std::advance(itC, std::size(tableColumns) / 2);
+	auto itC = tableColumns.begin();
 	for (int i = 0; i < std::size(tableColumns) / 4; i++)
 	{
 		if (itC->second.size() < amCandidates)
 		{
 			amCandidates = itC->second.size();
-			cell = std::get<1>(itC->first);
+			cell = { std::get<1>(itC->first), std::get<2>(itC->first) };
 			if (amCandidates == 1)
 				break;
 		}
@@ -84,6 +90,8 @@ std::tuple<int, int> SudokuSolver::findCellForHint(std::vector<std::vector<int>>
 
 void SudokuSolver::fillRows()
 {
+	std::tuple<int, int, int> rc, rn, cn, bn, rcn;
+	std::vector<std::tuple<int, int, int>> limitations;
 	for (int number = 1; number < gridSize + 1; number++)
 	{
 		for (int column = 0; column < gridSize; column++)
@@ -91,12 +99,13 @@ void SudokuSolver::fillRows()
 			for (int row = 0; row < gridSize; row++)
 			{
 				int box = (row / boxSize) * boxSize + (column / boxSize);
-				std::vector<std::tuple<std::string, std::tuple <int, int>>>
-					limitations{ std::tuple<std::string, std::tuple <int, int>>(std::string("rc"), std::tuple<int, int>(row, column)),
-								std::tuple<std::string, std::tuple <int, int>>(std::string("rn"), std::tuple<int, int>(row, number)),
-								std::tuple<std::string, std::tuple <int, int>>(std::string("cn"), std::tuple<int, int>(column, number)),
-								std::tuple<std::string, std::tuple <int, int>>(std::string("bn"), std::tuple<int, int>(box, number)) };
-				tableRows[std::tuple<int, int, int>(row, column, number)] = limitations;
+				rc = { 1, row, column };
+				rn = { 2, row, number };
+				cn = { 3, column, number };
+				bn = { 4, box, number };
+				limitations = {rc, rn, cn, bn};
+				rcn = { row, column, number };
+				tableRows[rcn] = limitations;
 			}
 		}
 	}
@@ -105,11 +114,11 @@ void SudokuSolver::fillRows()
 void SudokuSolver::fillColumns()
 {
 	tableColumns.clear();
-	std::map<std::tuple<int, int, int>, std::vector<std::tuple<std::string, std::tuple<int, int>>>> ::iterator itR = tableRows.begin();
+	auto itR = tableRows.begin();
 	for (int i = 0; i < std::size(tableRows); i++)
 	{
 		std::tuple<int, int, int> value = itR->first;
-		std::vector<std::tuple<std::string, std::tuple<int, int>>> key = itR->second;
+		auto key = itR->second;
 		for (int j = 0; j < std::size(key); j++)
 		{
 			tableColumns[key[j]].insert(value);
@@ -121,16 +130,18 @@ void SudokuSolver::fillColumns()
 std::vector<std::set<std::tuple<int, int, int>>> SudokuSolver::select(std::tuple<int, int, int> row)
 {
 	std::vector<std::set<std::tuple<int, int, int>>> columns;
+	std::tuple<int, int, int> xlimitation;
+	std::tuple<int, int, int> ylimitation;
+	std::tuple<int, int, int> cell;
 	for (int i = 0; i < std::size(tableRows[row]); i++)
 	{
-		std::tuple<std::string, std::tuple<int, int>> xlimitation = tableRows[row][i];
-		for (std::set<std::tuple<int, int, int>>::iterator number = tableColumns[xlimitation].begin(); 
-			 number != tableColumns[xlimitation].end(); number++)
+		xlimitation = tableRows[row][i];
+		for (auto number = tableColumns[xlimitation].begin(); number != tableColumns[xlimitation].end(); number++)
 		{
-			std::tuple<int, int, int> cell = *number;
+			cell = *number;
 			for (int j = 0; j < std::size(tableRows[cell]); j++)
 			{
-				std::tuple<std::string, std::tuple<int, int>> ylimitation = tableRows[cell][j];
+				ylimitation = tableRows[cell][j];
 				if (xlimitation != ylimitation)
 				{
 					tableColumns[ylimitation].erase(cell);
@@ -145,18 +156,20 @@ std::vector<std::set<std::tuple<int, int, int>>> SudokuSolver::select(std::tuple
 
 void SudokuSolver::deselect(std::tuple<int, int, int> row, std::vector<std::set<std::tuple<int, int, int>>> columns)
 {
+	std::tuple<int, int, int> xlimitation;
+	std::tuple<int, int, int> ylimitation;
+	std::tuple<int, int, int> cell;
 	for (int i = std::size(tableRows[row]) - 1; i > -1; i--)
 	{
-		std::tuple<std::string, std::tuple<int, int>> xlimitation = tableRows[row][i];
+		xlimitation = tableRows[row][i];
 		tableColumns[xlimitation] = columns.back();
 		columns.pop_back();
-		for (std::set<std::tuple<int, int, int>>::iterator number = tableColumns[xlimitation].begin();
-			 number != tableColumns[xlimitation].end(); number++)
+		for (auto number = tableColumns[xlimitation].begin(); number != tableColumns[xlimitation].end(); number++)
 		{
-			std::tuple<int, int, int> cell = *number;
+			cell = *number;
 			for (int j = 0; j < std::size(tableRows[cell]); j++)
 			{
-				std::tuple<std::string, std::tuple<int, int>> ylimitation = tableRows[cell][j];
+				ylimitation = tableRows[cell][j];
 				if (xlimitation != ylimitation)
 				{
 					tableColumns[ylimitation].insert(cell);
@@ -174,9 +187,8 @@ SudokuSolver::alghorithmX(std::vector<std::tuple<int, int, int>> cover)
 	else
 	{
 		int min = 10;
-		std::tuple<std::string, std::tuple<int, int>> minKey;
-		for (std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<std::tuple<int, int, int>>>::iterator itX = tableColumns.begin();
-			itX != tableColumns.end(); itX++)
+		std::tuple<int, int, int> minKey;
+		for (auto itX = tableColumns.begin(); itX != tableColumns.end(); itX++)
 		{
 			if (std::size(itX->second) < min)
 			{
@@ -184,13 +196,15 @@ SudokuSolver::alghorithmX(std::vector<std::tuple<int, int, int>> cover)
 				minKey = itX->first;
 			}
 		}
+		std::vector<std::set<std::tuple<int, int, int>>> temp;
+		std::vector<std::tuple<int, int, int>> solution;
 		for (int i = 0; i < min; i++)
 		{
-			std::set<std::tuple<int, int, int>>::iterator subset = tableColumns[minKey].begin();
+			auto subset = tableColumns[minKey].begin();
 			std::advance(subset, i);
 			cover.push_back(*subset);
-			std::vector<std::set<std::tuple<int, int, int>>> temp = select(cover.back());
-			std::vector<std::tuple<int, int, int>> solution = alghorithmX(cover);
+			temp = select(cover.back());
+			solution = alghorithmX(cover);
 			if (!solution.empty())
 				return solution;
 			deselect(cover.back(), temp);

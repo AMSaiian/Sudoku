@@ -12,12 +12,13 @@ GameBoard::GameBoard()
 
 void GameBoard::CreateBasicBoard()
 {
+	int number;
 	for (int i = 0; i < gridSize; i++)
 	{
 		std::vector<int> row;
 		for (int j = 0; j < gridSize; j++)
 		{
-			int number = (i * boxSize + i / boxSize + j) % gridSize + 1;
+			number = (i * boxSize + i / boxSize + j) % gridSize + 1;
 			row.push_back(number);
 		}
 		readyCells.push_back(row);
@@ -172,7 +173,7 @@ bool GameBoard::checkBlocked(int cellNumber)
 
 void GameBoard::insertToBlocked(int cellNumber)
 {
-	std::vector<int>::iterator it = std::lower_bound(blockedCells.begin(), blockedCells.end(), cellNumber);
+	auto it = std::lower_bound(blockedCells.begin(), blockedCells.end(), cellNumber);
 	blockedCells.insert(it, cellNumber);
 }
 
@@ -206,13 +207,14 @@ void GameBoard::CreateTask(int difficulty, SudokuSolver& solver)
 	std::vector<std::vector<int>> looked(gridSize, std::vector<int>(gridSize, 0));
 	int tempCell;
 	std::vector<std::vector<int>> tempCells;
+	std::tuple<int, int, int> limitation;
 	for (int i = 0; (i < amountCells) && (closed > 0); i++)
 	{
 		do chosen = rand() % amountCells;
 		while (looked[chosen / gridSize][chosen % gridSize] == 1);
 		looked[chosen / gridSize][chosen % gridSize] = 1;
 		tempCell = userCells[chosen / gridSize][chosen % gridSize];
-		std::tuple<int, int, int> limitation(chosen / gridSize, chosen % gridSize, tempCell);
+		limitation = { chosen / gridSize, chosen % gridSize, tempCell };
 		tempCells = userCells;
 		tempCells[chosen / gridSize][chosen % gridSize] = 0;
 		if (solver.solveSudoku(tempCells, limitation)[0][0] == 0)

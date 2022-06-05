@@ -8,8 +8,8 @@
 class SudokuSolver
 {
 private:
-	std::map<std::tuple<std::string, std::tuple<int, int>>, std::set<std::tuple<int, int, int>>> tableColumns;
-	std::map<std::tuple<int, int, int>, std::vector<std::tuple<std::string, std::tuple <int, int>>>> tableRows;
+	std::map<std::tuple<int, int, int>, std::set<std::tuple<int, int, int>>> tableColumns;
+	std::map<std::tuple<int, int, int>, std::vector<std::tuple<int, int, int>>> tableRows;
 	int boxSize;
 	int gridSize;
 	void fillRows();
