@@ -177,12 +177,16 @@ void Game::CreateGameWindow()
 				{
 					if (solver.solveSudoku(board.GetUserCells())[0][0])
 					{
+						board.addCorrectToBlocked();
 						std::tuple<int, int> cell = solver.findCellForHint(board.GetUserCells());
 						board.GetUserCells()[std::get<0>(cell)][std::get<1>(cell)] = board.GetReadyCells()[std::get<0>(cell)][std::get<1>(cell)];
 						board.insertToBlocked(std::get<0>(cell) * board.GetGridSize() + std::get<1>(cell));
 					}
 					else
+					{
+						board.addCorrectToBlocked();
 						PointUncorrect();
+					}
 				}
 			}
 			if (GameEvent.type == sf::Event::MouseButtonPressed && !win && !autoSolve &&

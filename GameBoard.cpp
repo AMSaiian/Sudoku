@@ -154,27 +154,29 @@ int GameBoard::GetGridSize()
 
 bool GameBoard::checkBlocked(int cellNumber)
 {
-	int mid = 0;
-	int left = 0;
-	int right = std::size(blockedCells) - 1;
-	while (true)
-	{
-		mid = (left + right) / 2;
-		if (cellNumber < blockedCells[mid])
-			right = mid - 1;
-		else if (cellNumber > blockedCells[mid])
-			left = mid + 1;
-		else
-			return true;
-		if (left > right)
-			return false;
-	}
+	auto it = blockedCells.find(cellNumber);
+	return it != blockedCells.end();
 }
 
 void GameBoard::insertToBlocked(int cellNumber)
 {
-	auto it = std::lower_bound(blockedCells.begin(), blockedCells.end(), cellNumber);
-	blockedCells.insert(it, cellNumber);
+	blockedCells.insert(cellNumber);
+}
+
+void GameBoard::addCorrectToBlocked()
+{
+	for (int i = 0; i < gridSize; i++)
+	{
+		for (int j = 0; j < gridSize; j++)
+		{
+			if (userCells[i][j] == 0)
+				continue;
+			else if (userCells[i][j] == readyCells[i][j])
+			{
+				insertToBlocked(i * gridSize + j);
+			}
+		}
+	}
 }
 
 void GameBoard::CreateTask(int difficulty, SudokuSolver& solver)
@@ -232,7 +234,7 @@ void GameBoard::CreateTask(int difficulty, SudokuSolver& solver)
 		for (int j = 0; j < gridSize; j++)
 		{
 			if (userCells[i][j] != 0)
-				blockedCells.push_back(i * gridSize + j);
+				blockedCells.insert(i * gridSize + j);
 		}
 	}
 }
