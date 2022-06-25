@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <fstream>
+#include <string>
 #include "Menu.h"
 #include "GameBoard.h"
 
@@ -14,6 +15,8 @@ private:
 	RenderWindow GameWindow;
 	Texture backTexture, winTexture, buttonPauseTexture, gridTexture, cellTextures, chosenTexture, returnTextures, winReturnTextures;
 	Sprite backSprite, winSprite, buttonPauseSprite, gridSprite, digitsSprite, chosenSprite, toMenuSprite, saveSprite, reloadSprite, autoSprite;
+	Text timeText;
+	Font timeFont;
 	std::vector<Sprite> cellsSprite;
 	std::vector<Sprite> chosenCells;
 	Event GameEvent{};

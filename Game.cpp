@@ -16,6 +16,9 @@ Game::Game(int difficulty)
 
 void Game::InitElem()
 {
+	timeFont.loadFromFile("Resources/comicbd.ttf");
+	timeText.setFont(timeFont);
+	timeText.setFillColor(Color(0,0,0,255));
 	backTexture.loadFromFile("Resources/Phon.png");
 	backSprite.setTexture(backTexture);
 	backSprite.setPosition(0, 0);
@@ -107,6 +110,11 @@ void Game::DrawWin()
 	toMenuSprite.setPosition(100, 500);
 	reloadSprite.setPosition(500, 500);
 	saveSprite.~Sprite();
+	std::wstring timeString = L"за " + std::to_string(board.getTotalTime() / 3600) + L" годин, "
+		+ std::to_string((board.getTotalTime() % 3600) / 60) + L" хвилин та " + std::to_string(board.getTotalTime() % 60) + L" секунд.";
+	timeText.setString(timeString);
+	timeText.setPosition(114, 400);
+	GameWindow.draw(timeText);
 	GameWindow.draw(toMenuSprite);
 	GameWindow.draw(reloadSprite);
 }
@@ -234,11 +242,15 @@ void Game::CreateGameWindow()
 			{
 				autoSolve = true;
 				board.GetUserCells() = board.GetReadyCells();
+				board.saveSolutionToFile();
 			}
 		}
-		if (board.GetUserCells() == board.GetReadyCells() && !autoSolve)
+		if (!win && board.GetUserCells() == board.GetReadyCells() && !autoSolve)
 		{
 			win = true;
+			board.getEndTime() = clock() / 1000;
+			board.getTotalTime() += board.getEndTime() - board.getStartTime();
+			board.saveSolutionToFile();
 		}
 		if (!win)
 		{

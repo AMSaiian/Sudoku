@@ -7,6 +7,7 @@
 #include <boost/serialization/set.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <fstream>
 #include "SudokuSolver.h"
 
 class GameBoard
@@ -14,6 +15,9 @@ class GameBoard
 private:
 	int boxSize;
 	int gridSize;
+	long int gameStart;
+	long int gameEnd;
+	long int totalTime;
 	std::vector<std::vector<int>> readyCells;
 	std::vector<std::vector<int>> userCells;
 	std::set<int> blockedCells;
@@ -34,10 +38,14 @@ public:
 	void CreateTask(int difficulty, SudokuSolver& solver);
 	void LoadGameBoard();
 	void SaveGameBoard();
+	long int& getStartTime();
+	long int& getEndTime();
+	long int& getTotalTime();
 	std::vector<std::vector<int>>& GetUserCells();
 	std::vector<std::vector<int>>& GetReadyCells();
 	int GetGridSize();
 	bool checkBlocked(int cellNumber);
 	void insertToBlocked(int cellNumber);
 	void addCorrectToBlocked();
+	void saveSolutionToFile();
 };

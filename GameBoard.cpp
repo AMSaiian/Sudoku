@@ -4,6 +4,9 @@ GameBoard::GameBoard(int boxSize)
 {
 	this->boxSize = boxSize;
 	this->gridSize = boxSize * boxSize;
+	this->totalTime = 0;
+	this->gameStart = clock() / 1000;
+	this->gameEnd = 0;
 }
 
 GameBoard::GameBoard()
@@ -163,6 +166,16 @@ void GameBoard::insertToBlocked(int cellNumber)
 	blockedCells.insert(cellNumber);
 }
 
+long int& GameBoard::getStartTime()
+{
+	return gameStart;
+}
+
+long int& GameBoard::getEndTime()
+{
+	return gameEnd;
+}
+
 void GameBoard::addCorrectToBlocked()
 {
 	for (int i = 0; i < gridSize; i++)
@@ -176,6 +189,33 @@ void GameBoard::addCorrectToBlocked()
 				insertToBlocked(i * gridSize + j);
 			}
 		}
+	}
+}
+
+long int& GameBoard::getTotalTime()
+{
+	return totalTime;
+}
+
+void GameBoard::saveSolutionToFile()
+{
+	std::fstream out("solution.txt", std::ios::out);
+	for (int i = 0; i < 9; i++)
+	{
+		if (i != 0 && i % 3 == 0)
+		{
+			out << std::string(21, '-');
+			out << "\n";
+			out << std::string(21, '-');
+			out << "\n";
+		}
+		for (int j = 0; j < 9; j++)
+		{
+			if (j != 0 && j % 3 == 0)
+				out << "| ";
+			out << readyCells[i][j] << " ";
+		}
+		out << "\n";
 	}
 }
 
@@ -245,12 +285,15 @@ void GameBoard::serialize(Archive& ar, const unsigned int version)
 	ar& readyCells;
 	ar& userCells;
 	ar& blockedCells;
+	ar& totalTime;
 }
 
 void GameBoard::SaveGameBoard()
 {
 	std::ofstream ofs("Save.dat");
 	boost::archive::text_oarchive ar(ofs);
+	gameEnd = clock() / 1000;
+	totalTime = gameEnd - gameStart;
 	ar & *this;
 	ofs.close();
 }
@@ -263,5 +306,7 @@ void GameBoard::LoadGameBoard()
 	ifs.close();
 	gridSize = std::size(readyCells[0]);
 	boxSize = pow(gridSize, 0.5);
+	gameStart = clock() / 1000;
+	gameEnd = 0;
 	int del = remove("Save.dat");
 }
